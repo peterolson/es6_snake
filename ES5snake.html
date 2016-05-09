@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake</title>
+    <style>
+    canvas {
+        border: 1px solid black;
+    }    
+    </style>
+</head>
+
+<body>
+    Score: <span id="score">0</span> High Score: <span id="highScore">0</span><br>
+    <canvas id="canvas"></canvas>
+</body>
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+var options = {
+    width: 500,  // pixels
+    height: 500, // pixels
+    rows: 25,
+    cols: 25,
+    timeStep: 100, // milliseconds
+    startX: 2,
+    startY: 2,
+    startDirection: "turnRight",
+    snakeColor: "blue",
+    foodColor: "red",
+    segmentGrowth: 5 // number of segments added when snake eats food
+};
+
+canvas.width = options.width;
+canvas.height = options.height;
+
+var Drawing = (function () {
+    var width = options.width / options.cols,
+        height = options.height / options.rows;
+    function draw(cell, color) {
+        var x = Math.round(cell[0] * width),
+            y = Math.round(cell[1] * height),
+            w = Math.round(width),
+            h = Math.round(height);
+        if (color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+        } else {
+            ctx.clearRect(x, y, w, h);
+        }
+    }
+    return {
+        drawSegment: function (cell) {
+            draw(cell, options.snakeColor);
+        },
+        drawFood: function (cell) {
+            draw(cell, options.foodColor);
+        },
+        eraseCell: function (cell) {
+            draw(cell);
+        },
+        reset: function () {
+            ctx.clearRect(0, 0, options.width, options.height);
+        }
+    }
+})();
+
+var Score = (function () {
+    var scoreSpan = document.getElementById("score");
+    var highScoreSpan = document.getElementById("highScore");
+    var score = 0;
+    var highScore = +localStorage.getItem("highScore");
+
+    function updateHighScore() {
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+        }
+        highScoreSpan.innerText = highScore;
+    }
+
+    return {
+        increment: function () {
+            score++;
+            scoreSpan.innerText = score;
+            updateHighScore();
+        },
+        reset: function () {
+            score = 0;
+            scoreSpan.innerText = score;
+            updateHighScore();
+        },
+        get value() {
+            return score;
+        }
+    };
+})();
+
+function contains(cells, cell) {
+    for (var i = 0; i < cells.length; i++) {
+        if (cells[i][0] === cell[0] && cells[i][1] === cell[1]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function Snake(x, y) {
+    this.x = x;
+    this.y = y;
+    this.dx = 0;
+    this.dy = 0;
+    this.segments = [[x, y]];
+    this.newSegmentCount = 0;
+    this.turnRight = function () {
+        this.dx = 1;
+        this.dy = 0;
+    }
+    this.turnLeft = function () {
+        this.dx = -1;
+        this.dy = 0;
+    }
+    this.turnDown = function () {
+        this.dx = 0;
+        this.dy = 1;
+    }
+    this.turnUp = function () {
+        this.dx = 0;
+        this.dy = -1;
+    }
+    this.move = function (food) {
+        this.x += this.dx;
+        this.y += this.dy;
+        if (this.x < 0 || this.x >= options.cols ||
+            this.y < 0 || this.y >= options.rows) {
+            Game.die();
+            return;
+        }
+        var cell = [this.x, this.y];
+        if (contains(this.segments, cell)) {
+            Game.die();
+            return;
+        }
+        this.segments.push(cell);
+        Drawing.drawSegment(cell);
+        if (contains(this.segments, food.location)) {
+            food.refresh(this);
+            Score.increment();
+            this.newSegmentCount += options.segmentGrowth;
+        }
+        if (this.newSegmentCount === 0) {
+            var last = this.segments.shift();
+            Drawing.eraseCell(last);
+        } else {
+            this.newSegmentCount--;
+        }
+    }
+}
+
+function Food() {
+    this.refresh = function (snake) {
+        var segments = snake.segments;
+        var freeSpots = [];
+        for (var x = 0; x < options.cols; x++) {
+            for (var y = 0; y < options.rows; y++) {
+                var cell = [x, y];
+                if (!contains(segments, cell)) {
+                    freeSpots.push(cell);
+                }
+            }
+        }
+        if (freeSpots.length === 0) {
+            Game.win();
+            return;
+        }
+        var index = Math.random() * freeSpots.length | 0;
+        this.location = freeSpots[index];
+        Drawing.drawFood(this.location);
+    }
+}
+
+var Game = (function () {
+
+    var timeout;
+    function init() {
+        Drawing.reset();
+        var snake = new Snake(options.startX, options.startY);
+        snake[options.startDirection]();
+        var food = new Food();
+        food.refresh(snake);
+        Score.reset();
+
+        function nextFrame() {
+            clearTimeout(timeout);
+            timeout = setTimeout(nextFrame, options.timeStep);
+            snake.move(food);
+        }
+        nextFrame();
+
+        window.onkeydown = function (e) {
+            var keyMethods = {
+                37: "turnLeft",
+                38: "turnUp",
+                39: "turnRight",
+                40: "turnDown"
+            };
+            var method = keyMethods[e.keyCode];
+            if (method) {
+                snake[method]();
+                nextFrame();
+            }
+        }
+    }
+
+    function reset() {
+        clearTimeout(timeout);
+        init();
+    }
+
+    function die() {
+        alert("You died. Your score was " + Score.value + ".")
+        reset();
+    }
+
+    function win() {
+        alert("Congratulations, you won!");
+        reset();
+    }
+
+    return {
+        init: init,
+        die: die,
+        win: win
+    };
+})();
+Game.init();
+</script>
+
+</html>
