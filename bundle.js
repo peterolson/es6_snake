@@ -48,7 +48,11 @@
 
 	var _game = __webpack_require__(1);
 
-	_game.Game.init();
+	var _game2 = _interopRequireDefault(_game);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	_game2.default.init();
 
 /***/ },
 /* 1 */
@@ -59,52 +63,35 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.Game = exports.options = exports.ctx = undefined;
 
 	var _drawing = __webpack_require__(2);
 
 	var _drawing2 = _interopRequireDefault(_drawing);
 
-	var _snake = __webpack_require__(60);
+	var _snake = __webpack_require__(61);
 
 	var _snake2 = _interopRequireDefault(_snake);
 
-	var _score = __webpack_require__(66);
+	var _score = __webpack_require__(67);
 
 	var _score2 = _interopRequireDefault(_score);
 
+	var _options = __webpack_require__(60);
+
+	var _options2 = _interopRequireDefault(_options);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var canvas = document.getElementById("canvas");
-	var ctx = exports.ctx = canvas.getContext("2d");
-
-	var options = exports.options = {
-	    width: 500, // pixels
-	    height: 500, // pixels
-	    rows: 25,
-	    cols: 25,
-	    timeStep: 100, // milliseconds
-	    startX: 2,
-	    startY: 2,
-	    startDirection: "turnRight",
-	    snakeColor: "blue",
-	    foodColor: "red",
-	    segmentGrowth: 5 // number of segments added when snake eats food
-	};
-
-	canvas.width = options.width;
-	canvas.height = options.height;
 
 	var timeout = void 0;
 	function init() {
 	    _drawing2.default.reset();
-	    var snake = new _snake2.default(options.startX, options.startY);
-	    snake[options.startDirection]();
+	    var snake = new _snake2.default(_options2.default.startX, _options2.default.startY);
+	    snake[_options2.default.startDirection]();
 	    _score2.default.reset();
 
 	    function nextFrame() {
 	        clearTimeout(timeout);
-	        timeout = setTimeout(nextFrame, options.timeStep);
+	        timeout = setTimeout(nextFrame, _options2.default.timeStep);
 	        snake.move();
 	    }
 	    nextFrame();
@@ -139,7 +126,7 @@
 	    reset();
 	}
 
-	var Game = exports.Game = { die: die, win: win, init: init };
+	exports.default = { die: die, win: win, init: init };
 
 /***/ },
 /* 2 */
@@ -155,13 +142,20 @@
 
 	var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-	var _game = __webpack_require__(1);
+	var _options = __webpack_require__(60);
+
+	var _options2 = _interopRequireDefault(_options);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	canvas.width = _options2.default.width;
+	canvas.height = _options2.default.height;
+
 	function draw(cell, color) {
-	    var width = _game.options.width / _game.options.cols,
-	        height = _game.options.height / _game.options.rows;
+	    var width = _options2.default.width / _options2.default.cols,
+	        height = _options2.default.height / _options2.default.rows;
 
 	    var _map = [cell[0] * width, cell[1] * height, width, height].map(Math.round);
 
@@ -173,25 +167,25 @@
 	    var h = _map2[3];
 
 	    if (color) {
-	        _game.ctx.fillStyle = color;
-	        _game.ctx.fillRect(x, y, w, h);
+	        ctx.fillStyle = color;
+	        ctx.fillRect(x, y, w, h);
 	    } else {
-	        _game.ctx.clearRect(x, y, w, h);
+	        ctx.clearRect(x, y, w, h);
 	    }
 	}
 
 	exports.default = {
 	    drawSegment: function drawSegment(cell) {
-	        draw(cell, _game.options.snakeColor);
+	        draw(cell, _options2.default.snakeColor);
 	    },
 	    drawFood: function drawFood(cell) {
-	        draw(cell, _game.options.foodColor);
+	        draw(cell, _options2.default.foodColor);
 	    },
 	    eraseCell: function eraseCell(cell) {
 	        draw(cell);
 	    },
 	    reset: function reset() {
-	        _game.ctx.clearRect(0, 0, _game.options.width, _game.options.height);
+	        ctx.clearRect(0, 0, _options2.default.width, _options2.default.height);
 	    }
 	};
 
@@ -1122,6 +1116,29 @@
 
 /***/ },
 /* 60 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = {
+	    width: 500, // pixels
+	    height: 500, // pixels
+	    rows: 25,
+	    cols: 25,
+	    timeStep: 100, // milliseconds
+	    startX: 2,
+	    startY: 2,
+	    startDirection: "turnRight",
+	    snakeColor: "blue",
+	    foodColor: "red",
+	    segmentGrowth: 5 // number of segments added when snake eats food
+	};
+
+/***/ },
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1130,11 +1147,11 @@
 	    value: true
 	});
 
-	var _classCallCheck2 = __webpack_require__(61);
+	var _classCallCheck2 = __webpack_require__(62);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-	var _createClass2 = __webpack_require__(62);
+	var _createClass2 = __webpack_require__(63);
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -1144,9 +1161,15 @@
 
 	var _game = __webpack_require__(1);
 
-	var _score = __webpack_require__(66);
+	var _game2 = _interopRequireDefault(_game);
+
+	var _score = __webpack_require__(67);
 
 	var _score2 = _interopRequireDefault(_score);
+
+	var _options = __webpack_require__(60);
+
+	var _options2 = _interopRequireDefault(_options);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1207,13 +1230,13 @@
 	        value: function move() {
 	            this.x += this.dx;
 	            this.y += this.dy;
-	            if (this.x < 0 || this.x >= _game.options.cols || this.y < 0 || this.y >= _game.options.rows) {
-	                _game.Game.die();
+	            if (this.x < 0 || this.x >= _options2.default.cols || this.y < 0 || this.y >= _options2.default.rows) {
+	                _game2.default.die();
 	                return;
 	            }
 	            var cell = [this.x, this.y];
 	            if (contains(this.segments, cell)) {
-	                _game.Game.die();
+	                _game2.default.die();
 	                return;
 	            }
 	            this.segments.push(cell);
@@ -1221,7 +1244,7 @@
 	            if (contains(this.segments, this.foodLocation)) {
 	                this.refreshFood();
 	                _score2.default.increment();
-	                this.newSegmentCount += _game.options.segmentGrowth;
+	                this.newSegmentCount += _options2.default.segmentGrowth;
 	            }
 	            if (this.newSegmentCount === 0) {
 	                var last = this.segments.shift();
@@ -1234,8 +1257,8 @@
 	        key: "refreshFood",
 	        value: function refreshFood() {
 	            var freeSpots = [];
-	            for (var x = 0; x < _game.options.cols; x++) {
-	                for (var y = 0; y < _game.options.rows; y++) {
+	            for (var x = 0; x < _options2.default.cols; x++) {
+	                for (var y = 0; y < _options2.default.rows; y++) {
 	                    var cell = [x, y];
 	                    if (!contains(this.segments, cell)) {
 	                        freeSpots.push(cell);
@@ -1243,7 +1266,7 @@
 	                }
 	            }
 	            if (freeSpots.length === 0) {
-	                _game.Game.win();
+	                _game2.default.win();
 	                return;
 	            }
 	            var index = Math.random() * freeSpots.length | 0;
@@ -1257,7 +1280,7 @@
 	exports.default = _class;
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1271,14 +1294,14 @@
 	};
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _defineProperty = __webpack_require__(63);
+	var _defineProperty = __webpack_require__(64);
 
 	var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
@@ -1303,23 +1326,23 @@
 	}();
 
 /***/ },
-/* 63 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(64), __esModule: true };
-
-/***/ },
 /* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(65);
+	module.exports = { "default": __webpack_require__(65), __esModule: true };
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(66);
 	var $Object = __webpack_require__(19).Object;
 	module.exports = function defineProperty(it, key, desc){
 	  return $Object.defineProperty(it, key, desc);
 	};
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $export = __webpack_require__(17);
@@ -1327,7 +1350,7 @@
 	$export($export.S + $export.F * !__webpack_require__(27), 'Object', {defineProperty: __webpack_require__(23).f});
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports) {
 
 	"use strict";

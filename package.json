@@ -1,7 +1,7 @@
 {
   "name": "es6-demo",
   "scripts": {
-    "build": "webpack --watch"
+    "build": "webpack --watch --source-maps"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",

@@ -1,6 +1,7 @@
 import Drawing from './drawing';
-import {options, Game} from "./game";
+import Game from "./game";
 import Score from "./score";
+import options from "./options"
 
 function contains(cells, cell) {
     for (let i = 0; i < cells.length; i++) {

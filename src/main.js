@@ -1,2 +1,2 @@
-import {Game} from "./game";
+import Game from "./game";
 Game.init();

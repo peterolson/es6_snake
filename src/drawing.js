@@ -1,5 +1,9 @@
+import options from "./options";
 
-import {options, ctx} from "./game";
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+canvas.width = options.width;
+canvas.height = options.height;
 
 function draw(cell, color) {
     let width = options.width / options.cols,

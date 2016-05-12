@@ -1,26 +1,7 @@
 import Drawing from './drawing';
 import Snake from "./snake";
 import Score from "./score";
-
-const canvas = document.getElementById("canvas");
-export const ctx = canvas.getContext("2d");
-
-export const options = {
-    width: 500,  // pixels
-    height: 500, // pixels
-    rows: 25,
-    cols: 25,
-    timeStep: 100, // milliseconds
-    startX: 2,
-    startY: 2,
-    startDirection: "turnRight",
-    snakeColor: "blue",
-    foodColor: "red",
-    segmentGrowth: 5 // number of segments added when snake eats food
-};
-
-canvas.width = options.width;
-canvas.height = options.height;
+import options from "./options"
 
 let timeout;
 function init() {
@@ -66,4 +47,4 @@ function win() {
     reset();
 }
 
-export const Game = { die, win, init };
+export default { die, win, init };
